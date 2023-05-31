@@ -1,4 +1,7 @@
-import * as React from "react";
+import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import capitalize from "lodash.capitalize";
+
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -9,9 +12,15 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Container from "@mui/material/Container";
 import Button from "@mui/material/Button";
 import MenuItem from "@mui/material/MenuItem";
+import Tooltip from "@mui/material/Tooltip";
 import AdbIcon from "@mui/icons-material/Adb";
+import DarkMode from "@mui/icons-material/DarkMode";
+import LightMode from "@mui/icons-material/LightMode";
 
-import { useNavigate } from "react-router-dom";
+import { useSelector, useDispatch } from 'react-redux';
+import { toggleTheme } from '../../redux/reducers/theme'
+
+
 
 const pages = [
   {
@@ -30,7 +39,9 @@ const pages = [
 
 function Header() {
   const navigate = useNavigate();
-  const [anchorElNav, setAnchorElNav] = React.useState(null);
+  const { isDark, theme } = useSelector(state => state.theme)
+  const dispatch = useDispatch();
+  const [anchorElNav, setAnchorElNav] = useState(null);
 
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
@@ -44,13 +55,17 @@ function Header() {
     const { path, closeMenu } = e.currentTarget.dataset;
     navigate(path);
 
-    if (closeMenu === 'true') {
+    if (closeMenu === "true") {
       handleCloseNavMenu();
     }
   };
 
+  const toggleThemeClick = () => {
+    dispatch(toggleTheme());
+  };
+
   return (
-    <AppBar position="static">
+    <AppBar position="static" color={isDark ? "secondary" : "primary"}>
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <AdbIcon sx={{ display: { xs: "none", md: "flex" }, mr: 1 }} />
@@ -69,7 +84,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            Artem
+            Name
           </Typography>
 
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
@@ -102,7 +117,12 @@ function Header() {
               }}
             >
               {pages.map(({ title, path }) => (
-                <MenuItem key={title} data-path={path} data-close-menu onClick={handleClick}>
+                <MenuItem
+                  key={title}
+                  data-path={path}
+                  data-close-menu
+                  onClick={handleClick}
+                >
                   <Typography textAlign="center">{title}</Typography>
                 </MenuItem>
               ))}
@@ -125,7 +145,7 @@ function Header() {
               textDecoration: "none",
             }}
           >
-            Artem
+            Name
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map(({ title, path }) => (
@@ -139,6 +159,20 @@ function Header() {
               </Button>
             ))}
           </Box>
+          <div>
+            <Tooltip title={capitalize(theme) + " Mode"}>
+              <IconButton
+                size="large"
+                aria-label="account of current user"
+                aria-controls="menu-appbar"
+                aria-haspopup="true"
+                onClick={toggleThemeClick}
+                color="inherit"
+              >
+                {isDark ? <LightMode /> : <DarkMode />}
+              </IconButton>
+            </Tooltip>
+          </div>
         </Toolbar>
       </Container>
     </AppBar>
